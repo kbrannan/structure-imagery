@@ -13,13 +13,18 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
 
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
 
+def unique_values(table , field):
+    with arcpy.da.SearchCursor(table, field) as cursor:
+        return sorted({row[0] for row in cursor})
+
+mylist = unique_values(SelLayer,'FID')
 
 desc = arcpy.Describe(SelLayer)
 fields = desc.fields
 for field in fields:
     print field.aliasName
 
-query = '"FID" = {}'.format(myList[0])
+query = '"FID" = {}'.format(mylist[0])
 
 arcpy.SelectLayerByAttribute_management(SelLayer, 'NEW_SELECTION', query)
 df.zoomToSelectedFeatures()
