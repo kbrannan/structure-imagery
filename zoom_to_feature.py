@@ -23,7 +23,8 @@ query = '"FID" = {}'.format(myList[0])
 
 arcpy.SelectLayerByAttribute_management(SelLayer, 'NEW_SELECTION', query)
 df.zoomToSelectedFeatures()
+df.panToExtent(SelLayer.getSelectedExtent())
 arcpy.RefreshActiveView()
-arcpy.mapping.ExportToPNG(mxd_cur, str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(myList[0]) + '.png',
+arcpy.mapping.ExportToPNG(mxd_cur, str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(myList[0]) + 'ext.png',
                                   df, df_export_width=1600, df_export_height=1600, world_file=True)
 
