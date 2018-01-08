@@ -1,7 +1,5 @@
-def get_sel_extent(mxd, lyr, df, sqlquery):
-    from arcpy import SelectLayerByAttribute_management as SEL_LYR
-    SEL_LYR(lyr, 'NEW_SELECTION', sqlquery)
-    SEL_LYR(lyr, 'NEW_SELECTION', sqlquery)
+def get_sel_extent(lyr, sqlquery):
+    arcpy.SelectLayerByAttribute_management(lyr, 'NEW_SELECTION', sqlquery)
     ext = lyr.getSelectedExtent()
     return ext
 
