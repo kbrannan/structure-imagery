@@ -102,3 +102,7 @@ ENV/
 
 # PyCharm stuff
 .idea
+
+# image files
+*.png
+*.pnw
