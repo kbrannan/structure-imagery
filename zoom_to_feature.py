@@ -1,5 +1,4 @@
 import arcpy, os
-import get_sel_extent
 
 def unique_values(table , field):
     with arcpy.da.SearchCursor(table, field) as cursor:
@@ -25,17 +24,14 @@ SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
 
 mylist = unique_values(SelLayer,'FID')
 
-# desc = arcpy.Describe(SelLayer)
-# fields = desc.fields
-# for field in fields:
-#     print field.aliasName
+for curFID in mylist:
+    query = '"FID" = {}'.format(curFID)
+    ext_cur = get_sel_extent(SelLayer, query)
+    df.panToExtent(ext_cur)
+    arcpy.RefreshActiveView()
+    arcpy.mapping.ExportToPNG(mxd_cur, str_path_export + '\\' + str_file_image_export_prefix +
+                              '{}'.format(curFID) + 'ext.png',df,
+                              df_export_width=1600, df_export_height=1600, world_file=True)
+    del ext_cur
 
-query = '"FID" = {}'.format(mylist[0])
-
-ext_cur = get_sel_extent(SelLayer, query)
-df.panToExtent(ext_cur)
-arcpy.RefreshActiveView()
-
-arcpy.mapping.ExportToPNG(mxd_cur, str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(myList[0]) + 'ext.png',
-                                  df, df_export_width=1600, df_export_height=1600, world_file=True)
 
