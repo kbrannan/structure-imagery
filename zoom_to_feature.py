@@ -10,6 +10,13 @@ def get_sel_extent(lyr, sqlquery):
     ext = lyr.getSelectedExtent()
     return ext
 
+def create_sel_lyr(lyr, sqlquery):
+    arcpy.Delete_management('in_memory\lyr_sel')
+    arcpy.SelectLayerByAttribute_management(lyr, 'CLEAR_SELECTION')
+    arcpy.SelectLayerByAttribute_management(lyr, 'NEW_SELECTION', sqlquery)
+    lyr_out = arcpy.CopyFeatures_management(lyr, 'in_memory\lyr_sel')
+    return lyr_out
+
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
 str_df_zoom_name = r'Zoom to Feature'
@@ -27,12 +34,19 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
 for lyr in df:
-    lyr.visible = False
+    lyr.visible = False # make layers in no visible
 del lyr
 
 
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
+
+arcpy.SelectLayerByAttribute_management(SelLayer, 'NEW_SELECTION', query)
+arcpy.CopyFeatures_management(SelLayer, 'in_memory\lyr_sel')
+
 arcpy.SelectLayerByAttribute_management(SelLayer, 'CLEAR_SELECTION')
+arcpy.Delete_management('in_memory\lyr_sel')
+del lyr_sel
+lyr_sel0 = create_sel_lyr(SelLayer, query)
 
 mylist = unique_values(SelLayer,'FID')
 
