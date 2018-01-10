@@ -26,6 +26,10 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     del mxd_cur
     mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
+for lyr in df:
+    lyr.visible = False
+del lyr
+
 
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
 arcpy.SelectLayerByAttribute_management(SelLayer, 'CLEAR_SELECTION')
