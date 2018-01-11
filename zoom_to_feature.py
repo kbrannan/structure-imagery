@@ -33,31 +33,22 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     del mxd_cur
     mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
-for lyr in df:
-    lyr.visible = False # make layers in no visible
+for lyr in df: lyr.visible = False # make layers in no visible
 del lyr
 
-
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
-
-arcpy.SelectLayerByAttribute_management(SelLayer, 'NEW_SELECTION', query)
-arcpy.CopyFeatures_management(SelLayer, 'in_memory\lyr_sel')
-
 arcpy.SelectLayerByAttribute_management(SelLayer, 'CLEAR_SELECTION')
-arcpy.Delete_management('in_memory\lyr_sel')
-del lyr_sel
-lyr_sel0 = create_sel_lyr(SelLayer, query)
-
 mylist = unique_values(SelLayer,'FID')
 
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
     ext_cur = get_sel_extent(SelLayer, query)
+    lyr_sel0 = create_sel_lyr(SelLayer, query)
     df.panToExtent(ext_cur)
     arcpy.RefreshActiveView()
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_pg.png')
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_df.png',
                               data_frame=df, df_export_height=1600, df_export_width=1600, world_file=True)
-    del ext_cur
+    del ext_cur, lyr_sel0
 
 
