@@ -4,21 +4,6 @@ def unique_values(table , field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
-def get_sel_extent(lyr, sqlquery):
-    arcpy.SelectLayerByAttribute_management(lyr, 'CLEAR_SELECTION')
-    arcpy.SelectLayerByAttribute_management(lyr, 'NEW_SELECTION', sqlquery)
-    ext = lyr.getSelectedExtent()
-    return ext
-
-def create_sel_lyr(lyr, sqlquery):
-    lyr_out = 'in_memory\lyr_sel'
-    arcpy.Delete_management('in_memory\lyr_sel')
-    arcpy.SelectLayerByAttribute_management(lyr, 'CLEAR_SELECTION')
-    arcpy.SelectLayerByAttribute_management(lyr, 'NEW_SELECTION', sqlquery)
-    arcpy.CopyFeatures_management(lyr, lyr_out)
-
-    return lyr_out
-
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
 str_df_zoom_name = r'Zoom to Feature'
@@ -38,17 +23,6 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     #mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
-arcpy.Select_analysis(SelLayer, memSelLyr, "\"FID\" = 22")
-add_lyr = arcpy.mapping.Layer(memSelLyr)
-arcpy.mapping.AddLayer(df, add_lyr, "TOP")
-df.panToExtent(add_lyr.getExtent())
-SelLayer.visible = True
-arcpy.RefreshActiveView()
-arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_pg.png')
-
-
-
-arcpy.Delete_management("in_memory")
 
 mylist = unique_values(SelLayer,'FID')
 
@@ -66,25 +40,22 @@ for lyr in df:
         #print lyr.name
         lyr.visble = False
 del lyr
-
-arcpy.SelectLayerByAttribute_management(SelLayer, 'CLEAR_SELECTION')
+mylist = mylist[0:9]
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
-    # Local variables:
-PointPotentialStructureCentroids = "Near Stream Structures\\PointPotentialStructureCentroids"
-PointPotentialStructureCentr = "C:\\Temp\\arcgis\\Default.gdb\\PointPotentialStructureCentr"
-query = "\"FID\" = 22"
+    # Process: Select
+    arcpy.Select_analysis(SelLayer, memSelLyr, query)
+    add_lyr = arcpy.mapping.Layer(memSelLyr)
+    arcpy.mapping.AddLayer(df, add_lyr, "TOP")
+    arcpy.SelectLayerByAttribute_management(in_layer_or_view=SelLayer, selection_type='NEW_SELECTION', where_clause=query)
 
-# Process: Select
-arcpy.Select_analysis(SelLayer, memSelLyr, "\"FID\" = 22")
-    ext_cur = get_sel_extent(SelLayer, query)
-    lyr_sel0 = create_sel_lyr(SelLayer, query)
-    df.panToExtent(ext_cur)
-    SelLayer.visible = False
+    #df.panToExtent(add_lyr.getExtent())
+    df.zoomToSelectedFeatures()
+    #SelLayer.visible = True
     arcpy.RefreshActiveView()
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_pg.png')
-#    arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_df.png',
-#                              data_frame=df, df_export_height=1600, df_export_width=1600, world_file=True)
-    del query, ext_cur, lyr_sel0
+    arcpy.Delete_management(add_lyr)
+    arcpy.Delete_management("in_memory")
+    del query
 
 
