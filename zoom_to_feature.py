@@ -26,7 +26,7 @@ SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
 
 mylist = unique_values(SelLayer,'FID')
 
-# make all layers no visible
+# make all layers not visible
 for lyr in df:
     if lyr.isGroupLayer == True:
         #print "Layers in " + lyr.name
