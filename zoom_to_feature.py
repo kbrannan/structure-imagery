@@ -4,6 +4,7 @@ def unique_values(table , field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
+
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
 str_df_zoom_name = r'Zoom to Feature'
