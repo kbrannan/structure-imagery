@@ -8,6 +8,7 @@ str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiv
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
 str_df_zoom_name = r'Zoom to Feature'
 str_strc_cent = r'PointPotentialStructureCentroids'
+str_strc_poly = r'Potential Structures'
 
 str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'
 str_file_image_export_prefix = 'strt_'
@@ -22,25 +23,25 @@ if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     #del mxd_cur
     #mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
-SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_cent, df)[0]
+SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_poly, df)[0]
 
 mylist = unique_values(SelLayer,'FID')
 
 # make all layers not visible
 for lyr in df:
     if lyr.isGroupLayer == True:
-        #print "Layers in " + lyr.name
+        print "Layers in " + lyr.name
         lyr_g = arcpy.mapping.ListLayers(lyr)
         for lyr_in_g in lyr_g:
-            #print lyr_in_g.name
+            print lyr_in_g.name
             lyr_in_g.visible = False
-        #print ""
+        print ""
         del lyr_in_g, lyr_g
     else:
-        #print lyr.name
+        print lyr.name
         lyr.visble = False
 del lyr
-mylist = mylist[0:9]
+mylist = mylist[0:2]
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
     # Process: Select
@@ -48,10 +49,10 @@ for curFID in mylist:
     add_lyr = arcpy.mapping.Layer(memSelLyr)
     arcpy.mapping.AddLayer(df, add_lyr, "TOP")
     arcpy.SelectLayerByAttribute_management(in_layer_or_view=SelLayer, selection_type='NEW_SELECTION', where_clause=query)
-
     #df.panToExtent(add_lyr.getExtent())
     df.zoomToSelectedFeatures()
     #SelLayer.visible = True
+    add_lyr.visible = True
     arcpy.RefreshActiveView()
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_pg.png')
     arcpy.Delete_management(add_lyr)
