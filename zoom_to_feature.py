@@ -10,7 +10,7 @@ str_df_zoom_name = r'Zoom to Feature'
 str_df_state_name = r'Overall Watershed'
 str_strc_cent = r'PointPotentialStructureCentroids'
 str_strc_poly = r'Potential Structures'
-str_strm_line = r'NHD Flowlines'
+str_strm_lines = r'NHD Flowlines'
 
 str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'
 str_file_image_export_prefix = 'strt_'
