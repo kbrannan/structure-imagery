@@ -4,6 +4,7 @@ def unique_values(table , field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
+
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
 str_df_zoom_name = r'Zoom to Feature'
@@ -33,12 +34,12 @@ mylist = unique_values(SelLayer,'FID')
 # make all layers not visible
 for lyr in df:
     if lyr.isGroupLayer == True:
-        #print "Layers in " + lyr.name
+        print "Layers in " + lyr.name
         lyr_g = arcpy.mapping.ListLayers(lyr)
         for lyr_in_g in lyr_g:
-            #print lyr_in_g.name
+            print lyr_in_g.name
             lyr_in_g.visible = False
-        #print ""
+        print ""
         del lyr_in_g, lyr_g
     else:
         print lyr.name
@@ -46,19 +47,31 @@ for lyr in df:
 lyr = arcpy.mapping.ListLayers(mxd_cur, str_strm_line, df)[0]
 lyr.visible = True
 del lyr
+<<<<<<< HEAD
 arcpy.RefreshTOC()
 
+=======
+mylist = mylist[0:2]
+>>>>>>> fbd4b95b3218e12d2e23e4367b33aeb9d90a9ed6
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
     # Process: Select
     arcpy.Select_analysis(SelLayer, memSelLyr, query)
     add_lyr = arcpy.mapping.Layer(memSelLyr)
     arcpy.mapping.AddLayer(df, add_lyr, "TOP")
+<<<<<<< HEAD
     arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
     df.panToExtent(add_lyr.getSelectedExtent())
     #df.zoomToSelectedFeatures()
     add_lyr.visible = True
     arcpy.RefreshTOC()
+=======
+    arcpy.SelectLayerByAttribute_management(in_layer_or_view=SelLayer, selection_type='NEW_SELECTION', where_clause=query)
+    #df.panToExtent(add_lyr.getExtent())
+    df.zoomToSelectedFeatures()
+    #SelLayer.visible = True
+    add_lyr.visible = True
+>>>>>>> fbd4b95b3218e12d2e23e4367b33aeb9d90a9ed6
     arcpy.RefreshActiveView()
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix +'{}'.format(curFID) + '_ext_pg.png')
     arcpy.Delete_management(add_lyr)
