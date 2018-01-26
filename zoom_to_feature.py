@@ -55,7 +55,7 @@ for curFID in mylist:
     add_lyr = arcpy.mapping.Layer(memSelLyr)
     arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
     arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
-    df.panToExtent(add_lyr.getSelectedExtent())
+    df_zoom.panToExtent(add_lyr.getSelectedExtent())
     #df.zoomToSelectedFeatures()
     add_lyr.visible = True
     arcpy.RefreshTOC()
