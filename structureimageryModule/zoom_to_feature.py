@@ -1,8 +1,6 @@
 import arcpy, os
 
-def unique_values(table , field):
-    with arcpy.da.SearchCursor(table, field) as cursor:
-        return sorted({row[0] for row in cursor})
+
 
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
@@ -17,14 +15,8 @@ str_file_image_export_prefix = 'strt_'
 
 memSelLyr = "in_memory" + "\\" + "memSelLayer"
 
-if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
-    mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
-    df_zoom = arcpy.mapping.ListDataFrames(mxd_cur, str_df_zoom_name)[0]
-    df_state = arcpy.mapping.ListDataFrames(mxd_cur, str_df_state_name)[0]
-    #mxd_cur.activeView='PAGE_LAYOUT' # make sure the page layout is current view to get map with mulp data frames
-    #mxd_cur.save() # have to save and then reload mxd for the change in active view to take effect
-    #del mxd_cur
-    #mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
+mxd_cur = get_mxd(str_path_mxd, str_file_mxd)
+
 
 SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_poly, df_zoom)[0]
 
