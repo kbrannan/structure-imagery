@@ -1,7 +1,7 @@
 from arcpy import mapping
 from arcpy import Select_analysis, SelectLayerByAttribute_management, Delete_management
 
-def gen_map_images(mylist, SeLayer, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
+def gen_map_images(mylist, SelLayer, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
     memSelLyr = "in_memory" + "\\" + "memSelLayer"
     for curFID in mylist:
         query = '"FID" = {}'.format(curFID)
