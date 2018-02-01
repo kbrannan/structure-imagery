@@ -15,7 +15,7 @@ str_strm_line = r'NHD Flowlines'
 str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'
 str_file_image_export_prefix = 'strt_'
 
-memSelLyr = "in_memory" + "\\" + "memSelLayer"
+
 
 if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
@@ -47,6 +47,8 @@ lyr = arcpy.mapping.ListLayers(mxd_cur, str_strm_line, df_zoom)[0]
 lyr.visible = True
 del lyr
 arcpy.RefreshTOC()
+
+memSelLyr = "in_memory" + "\\" + "memSelLayer"
 
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
