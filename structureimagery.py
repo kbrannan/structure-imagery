@@ -45,18 +45,36 @@ def make_vis(mxd_cur, df, list_lyr):
 
 
 def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
-    #mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-    for curFID in my_list:
-        query = '"FID" = {}'.format(curFID)
-        #arcpy.Select_analysis(sel_lyr, mem_sel_lyr, query)
-        #add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
-        #arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
-        arcpy.SelectLayerByAttribute_management(in_layer_or_view=sel_lyr, selection_type='NEW_SELECTION', where_clause=query)
-        df_zoom.panToExtent(sel_lyr.getSelectedExtent())
-        sel_lyr.visible = True
-        arcpy.RefreshTOC()
-        arcpy.RefreshActiveView()
-        arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
-        #arcpy.Delete_management(add_lyr)
-        #arcpy.Delete_management("in_memory")
-        del query
+    if sel_lyr.isFeatureLayer:
+        print "Is sel_lyr a Feature Layer {}".format(sel_lyr.isFeatureLayer)
+        mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
+        for curFID in my_list:
+            query = '"FID" = {}'.format(curFID)
+            arcpy.SelectLayerByAttribute_management(in_layer_or_view=sel_lyr, selection_type='NEW_SELECTION', where_clause=query)
+            arcpy,CopyFeatures_management(sel_lyr, mem_sel_lyr)
+            # arcpy.Select_analysis(sel_lyr, mem_sel_lyr, query)
+            add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
+            arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
+            df_zoom.zoomToSelectedFeatures()
+            add_lyr.visible = True
+            arcpy.RefreshTOC()
+            arcpy.RefreshActiveView()
+            arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
+            arcpy.Delete_management(add_lyr)
+            arcpy.Delete_management("in_memory")
+            del query
+    else:
+        print "something ain't right"
+
+
+def make_sel(curFID, sel_lyr):
+    import arcpy
+    query = '"FID" = {}'.format(curFID)
+    print query
+    mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
+    arcpy.Select_analysis(sel_lyr, mem_sel_lyr, query)
+    add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
+    return add_lyr
+
+
+
