@@ -44,48 +44,37 @@ def make_vis(mxd_cur, df, list_lyr):
     arcpy.RefreshActiveView()
 
 
-def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
-    if sel_lyr.isFeatureLayer:
-        meminlyr =  "in_memory" + "\\" + "meminlayer"
-        arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
-        for curFID in my_list:
-            mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-            query = '"FID" = {}'.format(curFID)
-            arcpy.Select_analysis(meminlyr, mem_sel_lyr, query)
-            add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
-            arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
-            arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
-            df_zoom.panToExtent(add_lyr.getSelectedExtent())
-            # df_zoom.zoomToSelectedFeatures()
-            add_lyr.visible = True
-            arcpy.RefreshTOC()
-            arcpy.RefreshActiveView()
-            arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
-            arcpy.Delete_management(add_lyr)
-            arcpy.Delete_management("in_memory" + "\\" + "memSelLayer")
-            del query, mem_sel_lyr
-    else:
-        print "something ain't right"
-
-
-def make_sel(curFID, sel_lyr):
-    import arcpy
-    query = '"FID" = {}'.format(curFID)
+def make_sel(query, sel_lyr):
     mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-    meminlyr =  "in_memory" + "\\" + "memimlayer"
+    meminlyr =  "in_memory" + "\\" + "meminlayer"
     arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
     arcpy.Select_analysis(meminlyr, mem_sel_lyr, query)
     add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
-    del meminlyr
+    arcpy.Delete_management("in_memory" + "\\" + "meminlayer")
     return add_lyr
+
+
+def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
+    arcpy.env.overwriteOutput = True
+    for curFID in my_list:
+        query = '"FID" = {}'.format(curFID)
+        add_lyr = make_sel(query, sel_lyr)
+        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
+        arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
+        df_zoom.panToExtent(add_lyr.getSelectedExtent())
+        # df_zoom.zoomToSelectedFeatures()
+        add_lyr.visible = True
+        arcpy.RefreshTOC()
+        arcpy.RefreshActiveView()
+        arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
+        arcpy.Delete_management(add_lyr)
+        del query
+
+
 
 
 def gen_map_image_single(query, cur_id, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
     if sel_lyr.isFeatureLayer:
-        print ""
-        print "Is sel_lyr a Feature Layer = {}".format(sel_lyr.isFeatureLayer)
-        print 'Query is ' + query
-        print ""
         mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
         meminlyr =  "in_memory" + "\\" + "memimlayer"
         arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
