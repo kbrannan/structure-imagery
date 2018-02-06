@@ -17,7 +17,6 @@ def get_df(mxd_cur, str_df_name):
 
 def get_sel_layer(mxd_cur, str_poly, df_cur):
     lyr = arcpy.mapping.ListLayers(mxd_cur, str_poly, df_cur)[0]
-    #lyr_out = arcpy.mapping.Layer(lyr)
     return lyr
 
 
@@ -46,7 +45,7 @@ def make_vis(mxd_cur, df, list_lyr):
 
 def make_sel(query, sel_lyr):
     mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-    meminlyr =  "in_memory" + "\\" + "meminlayer"
+    meminlyr = "in_memory" + "\\" + "meminlayer"
     arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
     arcpy.Select_analysis(meminlyr, mem_sel_lyr, query)
     add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
@@ -69,25 +68,3 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
         arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
         arcpy.Delete_management(add_lyr)
         del query
-
-
-
-
-def gen_map_image_single(query, cur_id, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
-    if sel_lyr.isFeatureLayer:
-        mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-        meminlyr =  "in_memory" + "\\" + "memimlayer"
-        arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
-        arcpy.Select_analysis(meminlyr, mem_sel_lyr, query)
-        add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
-        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
-        df_zoom.zoomToSelectedFeatures()
-        add_lyr.visible = True
-        arcpy.RefreshTOC()
-        arcpy.RefreshActiveView()
-        arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(cur_id) + '_ext_pg.png')
-        arcpy.Delete_management(add_lyr)
-        arcpy.Delete_management("in_memory")
-    else:
-        print "something ain't right"
-
