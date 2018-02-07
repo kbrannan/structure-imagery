@@ -44,12 +44,15 @@ def make_vis(mxd_cur, df, list_lyr):
 
 
 def make_sel(query, sel_lyr):
-    mem_sel_lyr = "in_memory" + "\\" + "memSelLayer"
-    meminlyr = "in_memory" + "\\" + "meminlayer"
-    arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, meminlyr)
-    arcpy.Select_analysis(meminlyr, mem_sel_lyr, query)
-    add_lyr = arcpy.mapping.Layer(mem_sel_lyr)
-    arcpy.Delete_management("in_memory" + "\\" + "meminlayer")
+    bol_o = arcpy.env.overwriteOutput
+    arcpy.env.overwriteOutput = True
+    lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
+    lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
+    arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, lyr_temp_in)
+    arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
+    add_lyr = arcpy.mapping.Layer(lyr_temp_sel)
+    arcpy.Delete_management(lyr_temp_in)
+    arcpy.env.overwriteOutput = bol_o
     return add_lyr
 
 
