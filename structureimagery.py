@@ -1,4 +1,5 @@
 from os import path
+from datetime import datetime
 import arcpy
 
 
@@ -44,6 +45,7 @@ def make_vis(mxd_cur, df, list_lyr):
 
 
 def make_sel(query, sel_lyr):
+    now = datetime.now()
     bol_o = arcpy.env.overwriteOutput
     arcpy.env.overwriteOutput = True
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
@@ -51,6 +53,7 @@ def make_sel(query, sel_lyr):
     arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, lyr_temp_in)
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     add_lyr = arcpy.mapping.Layer(lyr_temp_sel)
+    add_lyr.name = "Selection" + now.strftime("%Y%m%d%H%M%S")
     arcpy.Delete_management(lyr_temp_in)
     arcpy.env.overwriteOutput = bol_o
     return add_lyr
@@ -62,7 +65,7 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
         query = '"FID" = {}'.format(curFID)
         add_lyr = make_sel(query, sel_lyr)
         arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
-        arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
+        # arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
         df_zoom.panToExtent(add_lyr.getSelectedExtent())
         # df_zoom.zoomToSelectedFeatures()
         add_lyr.visible = True
