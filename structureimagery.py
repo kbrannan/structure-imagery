@@ -53,7 +53,9 @@ def make_sel(query, sel_lyr):
     arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, lyr_temp_in)
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     # add_lyr = arcpy.mapping.Layer(lyr_temp_sel)
-    # add_lyr.name = "Selection" + now.strftime("%Y%m%d%H%M%S")
+    str_name = "Selection" + now.strftime("%Y%m%d%H%M%S")
+    arcpy.env.workspace = arcpy.env.scratchGDB
+    arcpy.Rename_management(lyr_temp_sel, str_name)
     # arcpy.Delete_management(lyr_temp_in)
     arcpy.env.overwriteOutput = bol_o
     return lyr_temp_sel
