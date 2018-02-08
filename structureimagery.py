@@ -45,19 +45,10 @@ def make_vis(mxd_cur, df, list_lyr):
 
 
 def make_sel(query, sel_lyr):
-    now = datetime.now()
-    bol_o = arcpy.env.overwriteOutput
-    arcpy.env.overwriteOutput = True
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, lyr_temp_in)
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
-    # add_lyr = arcpy.mapping.Layer(lyr_temp_sel)
-    str_name = "Selection" + now.strftime("%Y%m%d%H%M%S")
-    arcpy.env.workspace = arcpy.env.scratchGDB
-    arcpy.Rename_management(lyr_temp_sel, str_name)
-    # arcpy.Delete_management(lyr_temp_in)
-    arcpy.env.overwriteOutput = bol_o
     return lyr_temp_sel
 
 
