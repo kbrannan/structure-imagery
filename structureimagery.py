@@ -44,10 +44,10 @@ def make_vis(mxd_cur, df, list_lyr):
     arcpy.RefreshActiveView()
 
 
-def make_sel(query, sel_lyr):
+def make_sel(query, str_sel_lyr):
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
-    arcpy.MakeFeatureLayer_management(sel_lyr.dataSource, lyr_temp_in)
+    arcpy.MakeFeatureLayer_management(str_sel_lyr, lyr_temp_in)
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     return lyr_temp_sel
 
@@ -56,8 +56,9 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
     arcpy.env.overwriteOutput = True
     for curFID in my_list:
         query = '"FID" = {}'.format(curFID)
-        new_lyr = make_sel(query, sel_lyr)
-        add_lyr = arcpy.mapping.Layer(new_lyr)
+        str_new_lyr = make_sel(query, sel_lyr.dataSource)
+        # arcpy.MakeFeatureLayer_management(str_new_lyr, add_lyr)
+        add_lyr = arcpy.mapping.Layer(str_new_lyr)
         arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
         # arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
         df_zoom.panToExtent(add_lyr.getSelectedExtent())
