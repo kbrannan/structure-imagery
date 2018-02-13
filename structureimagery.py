@@ -57,20 +57,15 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
     for curFID in my_list:
         query = '"FID" = {}'.format(curFID)
         str_new_lyr = make_sel(query, sel_lyr.dataSource)
-        # arcpy.MakeFeatureLayer_management(str_new_lyr, add_lyr)
         add_lyr = arcpy.mapping.Layer(str_new_lyr)
         arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
-        # arcpy.SelectLayerByAttribute_management(in_layer_or_view=add_lyr, selection_type='NEW_SELECTION', where_clause=query)
         df_zoom.panToExtent(add_lyr.getSelectedExtent())
-        # df_zoom.zoomToSelectedFeatures()
         add_lyr.visible = True
         arcpy.RefreshTOC()
         arcpy.RefreshActiveView()
-        # str_flds = [f.name for f in arcpy.ListFields(add_lyr.dataSource)]
-        # print str_flds
         arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
         arcpy.mapping.RemoveLayer(df_zoom, add_lyr)
         arcpy.Delete_management(add_lyr)
         arcpy.RefreshTOC()
         arcpy.RefreshActiveView()
-        del query
+        del query, str_new_lyr, add_lyr
