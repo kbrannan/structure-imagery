@@ -13,15 +13,15 @@ str_strc_cent = r'PointPotentialStructureCentroids'                             
 str_strc_poly = r'Potential Structures'                                                         # Create a variable for potential structures
 str_strm_line = r'NHD Flowlines'                                                                # Create variable for National Hydrography Dataset flowlines
 
-str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'
-str_file_image_export_prefix = 'strt_'
+str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'      # Create path for structure images to be exported to
+str_file_image_export_prefix = 'strt_'                                                                                      # Create variable for image export prefix
 
 
-
+# Return True if path is an existing regular file 
 if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
-    mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
-    df_zoom = arcpy.mapping.ListDataFrames(mxd_cur, str_df_zoom_name)[0]
-    df_state = arcpy.mapping.ListDataFrames(mxd_cur, str_df_state_name)[0]
+    mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)                     # Create variable for full path and file name of .mxd file
+    df_zoom = arcpy.mapping.ListDataFrames(mxd_cur, str_df_zoom_name)[0]                        # Variable created, will Search for first data frame in.mxd file above, will it somehow search for the zoom to extent of the structures?
+    df_state = arcpy.mapping.ListDataFrames(mxd_cur, str_df_state_name)[0]                      # Variable created, will search for overall watershed from the first data frame in the .mxd file
     #mxd_cur.activeView='PAGE_LAYOUT' # make sure the page layout is current view to get map with mulp data frames
     #mxd_cur.save() # have to save and then reload mxd for the change in active view to take effect
     #del mxd_cur
