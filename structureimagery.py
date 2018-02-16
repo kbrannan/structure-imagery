@@ -20,7 +20,7 @@ def get_sel_layer(mxd_cur, str_poly, df_cur):
     lyr = arcpy.mapping.ListLayers(mxd_cur, str_poly, df_cur)[0]
     return lyr
 
-# ??
+# ?
 def unique_values(table, field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
