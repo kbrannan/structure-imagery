@@ -2,7 +2,7 @@ from os import path
 from datetime import datetime
 import arcpy
 
-
+# Locate map files from the path given, if it is not there will return "can't find file...."
 def get_mxd(str_path_mxd, str_file_mxd):
     if path.isfile(str_path_mxd + "\\" + str_file_mxd):
         mxd = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
@@ -10,22 +10,22 @@ def get_mxd(str_path_mxd, str_file_mxd):
         mxd = "can't find file " + str_file_mxd + " in folder " + str_path_mxd
     return mxd
 
-
+# Return data frame that includes the structure layer from current .mxd file?
 def get_df(mxd_cur, str_df_name):
     df_got = arcpy.mapping.ListDataFrames(mxd_cur, str_df_name)[0]
     return df_got
 
-
+# Return the structure layer from the data frame selected above from the .mxd file
 def get_sel_layer(mxd_cur, str_poly, df_cur):
     lyr = arcpy.mapping.ListLayers(mxd_cur, str_poly, df_cur)[0]
     return lyr
 
-
+# ??
 def unique_values(table, field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
-
+# Find layer "isGroupLayer" and turn off this layer, making it Not visible?
 def make_not_vis(df):
     for lyr in df:
         if lyr.isGroupLayer:
@@ -34,7 +34,7 @@ def make_not_vis(df):
         else:
             lyr.visible = False
 
-
+# Find structure layer and turn on this layer, making visible, update TOC and Active View
 def make_vis(mxd_cur, df, list_lyr):
     for str_lyr in list_lyr:
         lyr_cur = arcpy.mapping.ListLayers(mxd_cur, str_lyr, df)[0]
@@ -43,7 +43,7 @@ def make_vis(mxd_cur, df, list_lyr):
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
 
-
+# ??
 def make_sel(query, str_sel_lyr):
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
@@ -51,14 +51,14 @@ def make_sel(query, str_sel_lyr):
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     return lyr_temp_sel
 
-
-def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
+# Define function "gen_map_images" where parameters are defined inside parenthesis - this function
+def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):         # define function "gen_map_images" where parameters are defined inside parenthesis
     arcpy.env.overwriteOutput = True
     for curFID in my_list:
         query = '"FID" = {}'.format(curFID)
         str_new_lyr = make_sel(query, sel_lyr.dataSource)
-        add_lyr = arcpy.mapping.Layer(str_new_lyr)
-        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
+        add_lyr = arcpy.mapping.Layer(str_new_lyr)                              # Create variable for new layer "memSellyr"
+        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")                         # Add new "memSell" layer
         df_zoom.panToExtent(add_lyr.getSelectedExtent())
         add_lyr.visible = True
         arcpy.RefreshTOC()
