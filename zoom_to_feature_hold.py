@@ -1,16 +1,17 @@
-import arcpy, os
+import arcpy, os                                        # arcpy provides useful way to perform map automation, os provides tools to deal with filenames, paths, directories
 
+# Search for specific table and field (unique values), then return a sorted list from given iterable
 def unique_values(table , field):
-    with arcpy.da.SearchCursor(table, field) as cursor:
-        return sorted({row[0] for row in cursor})
+    with arcpy.da.SearchCursor(table, field) as cursor:         # search for unique value, what does "as cursor" do?
+        return sorted({row[0] for row in cursor})               # return a sorted list of 1st row, what does "in cursor" mean?
 
-str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
-str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
-str_df_zoom_name = r'Zoom to Feature'
-str_df_state_name = r'Overall Watershed'
-str_strc_cent = r'PointPotentialStructureCentroids'
-str_strc_poly = r'Potential Structures'
-str_strm_line = r'NHD Flowlines'
+str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'     # Create file path for .mxd files
+str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'                            # Create name for .mxd file
+str_df_zoom_name = r'Zoom to Feature'                                                           # Create variable name for selected feature to zoom to extent to
+str_df_state_name = r'Overall Watershed'                                                        # Create variable name for Watershed
+str_strc_cent = r'PointPotentialStructureCentroids'                                             # Create variable for a point that is the center of the structure
+str_strc_poly = r'Potential Structures'                                                         # Create a variable for potential structures
+str_strm_line = r'NHD Flowlines'                                                                # Create variable for National Hydrography Dataset flowlines
 
 str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\python\structure-imagery\images'
 str_file_image_export_prefix = 'strt_'
