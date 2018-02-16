@@ -17,19 +17,19 @@ str_path_export = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquina
 str_file_image_export_prefix = 'strt_'                                                                                      # Create variable for image export prefix
 
 
-# Return True if path is an existing regular file 
+# Return True if path is an existing regular file
 if os.path.isfile(str_path_mxd + "\\" + str_file_mxd):
     mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)                     # Create variable for full path and file name of .mxd file
-    df_zoom = arcpy.mapping.ListDataFrames(mxd_cur, str_df_zoom_name)[0]                        # Variable created, will Search for first data frame in.mxd file above, will it somehow search for the zoom to extent of the structures?
+    df_zoom = arcpy.mapping.ListDataFrames(mxd_cur, str_df_zoom_name)[0]                        # Variable created, will Search for first data frame in.mxd file above, will it search for the zoom to extent of the structures?
     df_state = arcpy.mapping.ListDataFrames(mxd_cur, str_df_state_name)[0]                      # Variable created, will search for overall watershed from the first data frame in the .mxd file
     #mxd_cur.activeView='PAGE_LAYOUT' # make sure the page layout is current view to get map with mulp data frames
     #mxd_cur.save() # have to save and then reload mxd for the change in active view to take effect
     #del mxd_cur
     #mxd_cur = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
 
-SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_poly, df_zoom)[0]
+SelLayer = arcpy.mapping.ListLayers(mxd_cur, str_strc_poly, df_zoom)[0]       # Variable created that will return a list of potential structures, zoom to extent, from the .mxd file
 
-mylist = unique_values(SelLayer,'FID')
+mylist = unique_values(SelLayer,'FID')                                        # What does this line do?
 
 # make all layers not visible
 for lyr in df_zoom:
@@ -44,12 +44,12 @@ for lyr in df_zoom:
     else:
         print lyr.name
         lyr.visble = False
-lyr = arcpy.mapping.ListLayers(mxd_cur, str_strm_line, df_zoom)[0]
-lyr.visible = True
-del lyr
+lyr = arcpy.mapping.ListLayers(mxd_cur, str_strm_line, df_zoom)[0]             # layer Variable created that will return a list of zoomed in extent of NHD Flowlines from the first data frame from the .mxd file?
+lyr.visible = True                                                             # make this variable visible
+del lyr                                                                        # delete the layer variable
 arcpy.RefreshTOC()
 
-memSelLyr = "in_memory" + "\\" + "memSelLayer"
+memSelLyr = "in_memory" + "\\" + "memSelLayer"                                 
 
 for curFID in mylist:
     query = '"FID" = {}'.format(curFID)
