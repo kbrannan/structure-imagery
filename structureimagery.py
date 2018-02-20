@@ -1,6 +1,7 @@
 from os import path
-from datetime import datetime
 import arcpy
+
+arcpy.env.workspace = arcpy.env.scratchGDB
 
 
 def get_mxd(str_path_mxd, str_file_mxd):
