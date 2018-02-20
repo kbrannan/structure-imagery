@@ -20,12 +20,12 @@ def get_sel_layer(mxd_cur, str_poly, df_cur):
     lyr = arcpy.mapping.ListLayers(mxd_cur, str_poly, df_cur)[0]
     return lyr
 
-# ?
+# Search for unique value, what does "as cursor" do? Sort returned values
 def unique_values(table, field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
-# Find layer "isGroupLayer" and turn off this layer, making it Not visible?
+# Find layer "isGroupLayer" and turn off this layer, making it Not visible
 def make_not_vis(df):
     for lyr in df:
         if lyr.isGroupLayer:
@@ -43,22 +43,23 @@ def make_vis(mxd_cur, df, list_lyr):
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
 
-# ??
+# Select features to extract features from structure layer?
 def make_sel(query, str_sel_lyr):
-    lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
-    lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
-    arcpy.MakeFeatureLayer_management(str_sel_lyr, lyr_temp_in)
-    arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
+    lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)       # ? Not sure what this and following line do
+    lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)      # ?
+    arcpy.MakeFeatureLayer_management(str_sel_lyr, lyr_temp_in)                 # Create a temporary feature layer "lyr_temp_in" from "str_sel_lyr"
+    arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)                     # Extract features from new feature layer above, "lyr_temp_in" according to SQL expression
     return lyr_temp_sel
 
-# Define function "gen_map_images" where parameters are defined inside parenthesis - this function
+# Function will go through "my_list" and use extracted information (unsure exactly what info) to create a new structure layer that is added to the top of the dataframe.
+# This layer will be made visible, then the newly added layer is deleted at the end of the function
 def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):         # define function "gen_map_images" where parameters are defined inside parenthesis
     arcpy.env.overwriteOutput = True
-    for curFID in my_list:
-        query = '"FID" = {}'.format(curFID)
-        str_new_lyr = make_sel(query, sel_lyr.dataSource)
-        add_lyr = arcpy.mapping.Layer(str_new_lyr)                              # Create variable for new layer "memSellyr"
-        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")                         # Add new "memSell" layer
+    for curFID in my_list:                                                      # What does "curFID" mean/do?
+        query = '"FID" = {}'.format(curFID)                                     # What information is being extracted according to this query?
+        str_new_lyr = make_sel(query, sel_lyr.dataSource)                       # Reference new layer "str_new_lyr"
+        add_lyr = arcpy.mapping.Layer(str_new_lyr)                              # Create variable/reference new layer "str_new_lyr"
+        arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")                         # Add new layer "str_new_lyr" to top of "df_zoom" dataframe
         df_zoom.panToExtent(add_lyr.getSelectedExtent())
         add_lyr.visible = True
         arcpy.RefreshTOC()
