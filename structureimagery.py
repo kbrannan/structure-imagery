@@ -70,3 +70,21 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
         arcpy.RefreshTOC()
         arcpy.RefreshActiveView()
         del query, str_new_lyr, add_lyr
+
+
+def gen_map_image(curFID, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
+    arcpy.env.overwriteOutput = True
+    query = '"FID" = {}'.format(curFID)
+    str_new_lyr = make_sel(query, sel_lyr.dataSource)
+    add_lyr = arcpy.mapping.Layer(str_new_lyr)
+    arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
+    df_zoom.panToExtent(add_lyr.getSelectedExtent())
+    add_lyr.visible = True
+    arcpy.RefreshTOC()
+    arcpy.RefreshActiveView()
+    arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
+    arcpy.mapping.RemoveLayer(df_zoom, add_lyr)
+    arcpy.Delete_management(add_lyr)
+    arcpy.RefreshTOC()
+    arcpy.RefreshActiveView()
+
