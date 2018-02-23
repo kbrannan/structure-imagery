@@ -3,7 +3,7 @@ import arcpy
 
 arcpy.env.workspace = arcpy.env.scratchGDB
 
-
+# Locate map files, return error if not found
 def get_mxd(str_path_mxd, str_file_mxd):
     if path.isfile(str_path_mxd + "\\" + str_file_mxd):
         mxd = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
@@ -11,22 +11,22 @@ def get_mxd(str_path_mxd, str_file_mxd):
         mxd = "can't find file " + str_file_mxd + " in folder " + str_path_mxd
     return mxd
 
-
+# Locate dataframe that includes structure layer from .mxd file
 def get_df(mxd_cur, str_df_name):
     df_got = arcpy.mapping.ListDataFrames(mxd_cur, str_df_name)[0]
     return df_got
 
-
+# Return a Python list of potential structures layer that exist within the .mxd file
 def get_sel_layer(mxd_cur, str_poly, df_cur):
     lyr = arcpy.mapping.ListLayers(mxd_cur, str_poly, df_cur)[0]
     return lyr
 
-
+# Return a sorted list of unique features
 def unique_values(table, field):
     with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
-
+# Turn off lyr_g layer (or does this turn all layers off?)
 def make_not_vis(df):
     for lyr in df:
         if lyr.isGroupLayer:
@@ -35,7 +35,7 @@ def make_not_vis(df):
         else:
             lyr.visible = False
 
-
+# Turn on "potential structures" layer
 def make_vis(mxd_cur, df, list_lyr):
     for str_lyr in list_lyr:
         lyr_cur = arcpy.mapping.ListLayers(mxd_cur, str_lyr, df)[0]
@@ -44,7 +44,7 @@ def make_vis(mxd_cur, df, list_lyr):
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
 
-
+# Select features to extract from stucture layer
 def make_sel(query, str_sel_lyr):
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
@@ -52,7 +52,7 @@ def make_sel(query, str_sel_lyr):
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     return lyr_temp_sel
 
-
+# Create a list of "potential structures" 
 def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
     arcpy.env.overwriteOutput = True
     for curFID in my_list:
