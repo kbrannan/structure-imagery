@@ -23,7 +23,7 @@ def get_sel_layer(mxd_cur, str_poly, df_cur):
 
 # Return a sorted list of unique features
 def unique_values(table, field):
-    with arcpy.da.SearchCursor(table, field) as cursor:
+   with arcpy.da.SearchCursor(table, field) as cursor:
         return sorted({row[0] for row in cursor})
 
 # Turn off lyr_g layer (or does this turn all layers off?)
@@ -40,11 +40,11 @@ def make_vis(mxd_cur, df, list_lyr):
     for str_lyr in list_lyr:
         lyr_cur = arcpy.mapping.ListLayers(mxd_cur, str_lyr, df)[0]
         lyr_cur.visible = True
-        arcpy.Delete_management(lyr_cur)
+        arcpy.Delete_management(lyr_cur)                                       # Deletes
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
 
-# Select features to extract from stucture layer
+# Select features to extract from structure layer
 def make_sel(query, str_sel_lyr):
     lyr_temp_in = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
     lyr_temp_sel = arcpy.CreateScratchName(workspace=arcpy.env.scratchGDB)
@@ -52,7 +52,7 @@ def make_sel(query, str_sel_lyr):
     arcpy.Select_analysis(lyr_temp_sel, lyr_temp_in, query)
     return lyr_temp_sel
 
-# Create a list of "potential structures" 
+# Create a list of "potential structures", output a .png file of the map with potential structure polygons
 def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
     arcpy.env.overwriteOutput = True
     for curFID in my_list:
@@ -71,13 +71,13 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
         arcpy.RefreshActiveView()
         del query, str_new_lyr, add_lyr
 
-
+# Create ONE map image .png file
 def gen_map_image(curFID, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_image_export_prefix):
-    arcpy.env.overwriteOutput = True
+    arcpy.env.overwriteOutput = True                                # Set to true means tools will execute and overwrite the output dataset
     query = '"FID" = {}'.format(curFID)
-    str_new_lyr = make_sel(query, sel_lyr.dataSource)
+    str_new_lyr = make_sel(query, sel_lyr.dataSource)               # Query the database
     add_lyr = arcpy.mapping.Layer(str_new_lyr)
-    arcpy.mapping.AddLayer(df_zoom, add_lyr, "TOP")
+    arcpy.mapping.AddLayer(df_zoom, add_lyr, "BOTTOM")
     df_zoom.panToExtent(add_lyr.getSelectedExtent())
     add_lyr.visible = True
     arcpy.RefreshTOC()
