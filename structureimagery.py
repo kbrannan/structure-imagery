@@ -4,13 +4,12 @@ import arcpy
 arcpy.env.workspace = arcpy.env.scratchGDB
 
 # Locate map files, return error if not found
-#def get_mxd(str_path_mxd, str_file_mxd):
-#    if path.isfile(str_path_mxd + "\\" + str_file_mxd):
-#        mxd = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
-#    else:
-#        mxd = "can't find file " + str_file_mxd + " in folder " + str_path_mxd
-#    return mxd
- #   print mxd                           #BRC added
+def get_mxd(str_path_mxd, str_file_mxd):
+    if path.isfile(str_path_mxd + "\\" + str_file_mxd):
+        mxd = arcpy.mapping.MapDocument(str_path_mxd + "\\" + str_file_mxd)
+    else:
+        mxd = "can't find file " + str_file_mxd + " in folder " + str_path_mxd
+    return mxd
 
 # Locate dataframe that includes structure layer from .mxd file
 def get_df(mxd_cur, str_df_name):
@@ -32,17 +31,16 @@ def make_not_vis(df):
     for lyr in df:
         if lyr.isGroupLayer:
             for lyr_g in lyr.isGroupLayer:
-                lyr_g.visible = False                                       # BRC Changed to true
+                lyr_g.visible = False
         else:
-            lyr.visible = False                                             # BRC Changed to true
+            lyr.visible = False
 
-# Turn on "potential structures" layer
+# Turn on "PointPotentialStructureCentroids" layer
 def make_vis(mxd_cur, df, list_lyr):
     for str_lyr in list_lyr:
         lyr_cur = arcpy.mapping.ListLayers(mxd_cur, str_lyr, df)[0]
         lyr_cur.visible = True
-#       df.zoomToSelectedFeatures()                                            #BRC added
-#        arcpy.Delete_management(lyr_cur)                                       # Deletes
+        #arcpy.Delete_management(lyr_cur)                                       # BTD this deletes the layer before outputting the image
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
 
@@ -66,9 +64,6 @@ def gen_map_images(my_list, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file
         add_lyr.visible = True
         arcpy.RefreshTOC()
         arcpy.RefreshActiveView()
-        str_mxd_save_post = r".mxd"                                                     #BRC added
-        mxd_cur.saveACopy('' + '\\' + str(curFID) + str_mxd_save_post)                  #BRC added
-#        add_lyr.saveACopy('' + '\\' + str(curFID) + str_mxd_save_post)                 #BRC added
         arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
         arcpy.mapping.RemoveLayer(df_zoom, add_lyr)
         arcpy.Delete_management(add_lyr)
@@ -82,14 +77,11 @@ def gen_map_image(curFID, sel_lyr, df_zoom, mxd_cur, str_path_export, str_file_i
     query = '"FID" = {}'.format(curFID)
     str_new_lyr = make_sel(query, sel_lyr.dataSource)               # Query the database
     add_lyr = arcpy.mapping.Layer(str_new_lyr)
-    arcpy.mapping.AddLayer(df_zoom, add_lyr, "BOTTOM")                 # Changed BOTTOM to TOP
+    arcpy.mapping.AddLayer(df_zoom, add_lyr, "BOTTOM")
     df_zoom.panToExtent(add_lyr.getSelectedExtent())
     add_lyr.visible = True
     arcpy.RefreshTOC()
     arcpy.RefreshActiveView()
-    str_mxd_save_post = r".mxd"                                                     #BRC added
-    mxd_cur.saveACopy('' + '\\' + str(curFID) + str_mxd_save_post)                  #BRC added
-#    add_lyr.saveACopy(str_path_export + '\\' + str(curFID) + str_mxd_save_post)     #BRC added
     arcpy.mapping.ExportToPNG(map_document=mxd_cur, out_png=str_path_export + '\\' + str_file_image_export_prefix + '{}'.format(curFID) + '_ext_pg.png')
     arcpy.mapping.RemoveLayer(df_zoom, add_lyr)
     arcpy.Delete_management(add_lyr)
