@@ -1,6 +1,5 @@
 import structureimagery as strimage
 
-#BRC placeholder
 
 str_path_mxd = r'\\deqhq1\tmdl\tmdl_wr\midcoast\GIS\BacteriaTMDL\UpperYaquinaRiver\MapDocs'
 str_file_mxd = r'Upper Yaquina Near-Stream Structures (scratch).mxd'
